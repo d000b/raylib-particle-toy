@@ -1,4 +1,19 @@
 
+#define WIN32_LEAN_AND_MEAN
+#if defined(_WIN32)
+#define WIN32
+#endif
+#if defined(_WIN64)
+#define WIN64
+#define _AMD64_
+#undef _X86_
+#else
+#undef _AMD64_
+#define _X86_
+#endif
+
+#include <minwindef.h>
+
 #include <vector>
 #include <algorithm>
 #include <iterator>
@@ -8,49 +23,47 @@
 
 int main() 
 {
-    // Initialization
-    //--------------------------------------------------------------------------------------
     const int screenWidth = 800;
     const int screenHeight = 800;
 
-    SetRandomSeed(1);
+    raylib::SetRandomSeed(1);
 
     const int particleCount = 100000;
     std::vector<Particle> particles;
     particles.reserve(particleCount);
 
-    const auto particle_ = Particle(screenWidth, screenHeight);
-    std::fill_n(std::back_inserter(particles), particleCount, particle_);
+    std::generate_n(std::back_inserter(particles), particleCount, [=]() -> auto&& { return Particle{ screenWidth, screenHeight }; });
 
-    InitWindow(screenWidth, screenHeight, "raylib test");
+    raylib::InitWindow(screenWidth, screenHeight, "raylib test");
 
-    SetTargetFPS(60);
+    raylib::SetTargetFPS(60);
 
+    constexpr raylib::Color white_background = (raylib::RAYWHITE);
 
-    while (!WindowShouldClose())
+    while (!raylib::WindowShouldClose())
     {
-        auto mousePos = Vector2{static_cast<float>(GetMouseX()), static_cast<float>(GetMouseY())};
+        auto mousePos = raylib::Vector2{static_cast<float>(raylib::GetMouseX()), static_cast<float>(raylib::GetMouseY())};
 
         for (long int i = 0; i < particleCount; i++)
-        {   
+        {
             particles[i].updatePosition(mousePos, 1, 0.99, screenWidth, screenHeight);
         }
 
-        BeginDrawing();
+        raylib::BeginDrawing();
 
-        ClearBackground(RAYWHITE);
+        raylib::ClearBackground(white_background);
 
         for (int i = 0; i < particleCount; i++)
         {
             particles[i].drawPixel();
         }
 
-        DrawFPS(10, 10);
+        raylib::DrawFPS(10, 10);
 
-        EndDrawing();
+        raylib::EndDrawing();
     }
 
-    CloseWindow();
+    raylib::CloseWindow();
 
     return 0;
 }
