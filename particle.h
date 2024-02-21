@@ -1,6 +1,12 @@
-#include <stdlib.h>
-#include <math.h>
-#include "raylib.h"
+#include <cstdlib>
+#include <cmath>
+#include <Windows.h>
+
+#include "raylib\raylib.h"
+#pragma comment(lib, "raylib\\raylib.lib")
+
+#pragma once
+
 
 class Particle
 {
@@ -14,29 +20,28 @@ private:
 public:
     Particle(int screenWidth, int screenHeight);
     Particle(Vector2 pos, Vector2 vel, Color color);
-    // ~Particle();
-
+private:
     void attract(Vector2 posToAttract, float multiplier);
     void doFriction(float amount);
     void move(int screenWidth, int screenHeight);
+public:
+    void updatePosition(const Vector2 posToAttract, const float attraction, const float friction, const long width, const long height);
     void drawPixel();
 };
 
-Particle::Particle(int screenWidth, int screenHeight)
-{
+Particle::Particle(int screenWidth, int screenHeight) {
     pos.x = GetRandomValue(0, screenWidth-1);
     pos.y = GetRandomValue(0, screenHeight-1);
     vel.x = GetRandomValue(-100, 100) / 100.f;
     vel.y = GetRandomValue(-100, 100) / 100.f;
     // color = (Color){GetRandomValue(0,255),GetRandomValue(0,255),GetRandomValue(0,255),255};
-    color = (Color){0,0,0,100};
+    color = Color{0,0,0,100};
 }
 
 Particle::Particle(Vector2 _pos, Vector2 _vel, Color _color)
+    : pos(_pos), vel(_vel), color(_color)
 {
-    pos = _pos;
-    vel = _vel;
-    color = _color;
+
 }
 
 float Particle::getDist(Vector2 otherPos) {
@@ -50,13 +55,12 @@ Vector2 Particle::getNormal(Vector2 otherPos) {
     if (dist == 0.0f) dist = 1;
     const float dx = pos.x - otherPos.x;
     const float dy = pos.y - otherPos.y;
-    Vector2 normal = (Vector2){dx*(1/dist), dy*(1/dist)};
+    Vector2 normal = Vector2{dx*(1/dist), dy*(1/dist)};
     return normal;
 }
 
 
-void Particle::attract(Vector2 posToAttract, float multiplier)
-{
+void Particle::attract(Vector2 posToAttract, float multiplier) {
     float dist = fmax(getDist(posToAttract),0.5);
     Vector2 normal = getNormal(posToAttract);
 
@@ -72,17 +76,25 @@ void Particle::doFriction(float amount) {
 void Particle::move(int screenWidth, int screenHeight) {
     pos.x += vel.x;
     pos.y += vel.y;
+
     if (pos.x < 0)
         pos.x += screenWidth;
-    if (pos.x >= screenWidth)
+    else if (pos.x >= screenWidth)
         pos.x -= screenWidth;
+
     if (pos.y < 0)
         pos.y += screenHeight;
-    if (pos.y >= screenHeight)
+    else if (pos.y >= screenHeight)
         pos.y -= screenHeight;
 }
+
+void Particle::updatePosition(const Vector2 posToAttract, const float attraction, const float friction, const long width, const long height) {
+    attract(posToAttract, attraction);
+    doFriction(friction);
+    move(width, height);
+}
+
 
 void Particle::drawPixel() {
     DrawPixelV(pos, color);
 }
-

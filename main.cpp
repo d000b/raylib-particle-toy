@@ -1,7 +1,10 @@
-#include <stdlib.h>
-#include "raylib.h"
+
+#include <vector>
+#include <algorithm>
+#include <iterator>
 
 #include "particle.h"
+
 
 int main() 
 {
@@ -13,58 +16,41 @@ int main()
     SetRandomSeed(1);
 
     const int particleCount = 100000;
-    Particle *particles = (Particle*)malloc(particleCount * sizeof(Particle));
+    std::vector<Particle> particles;
+    particles.reserve(particleCount);
 
-    for (long int i = 0; i < particleCount; i++)
-    {
-        particles[i] = Particle(screenWidth, screenHeight);
-    }
-    
+    const auto particle_ = Particle(screenWidth, screenHeight);
+    std::fill_n(std::back_inserter(particles), particleCount, particle_);
 
     InitWindow(screenWidth, screenHeight, "raylib test");
 
-    SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
-    //--------------------------------------------------------------------------------------
+    SetTargetFPS(60);
 
-    // Main game loop
-    while (!WindowShouldClose())    // Detect window close button or ESC key
+
+    while (!WindowShouldClose())
     {
-        // Update
-        //----------------------------------------------------------------------------------
-        Vector2 mousePos = (Vector2){(float)GetMouseX(), (float)GetMouseY()};
+        auto mousePos = Vector2{static_cast<float>(GetMouseX()), static_cast<float>(GetMouseY())};
+
         for (long int i = 0; i < particleCount; i++)
         {   
-            particles[i].attract(mousePos, 1);
-
-            particles[i].doFriction(0.99);
-
-            particles[i].move(screenWidth, screenHeight);
-            
+            particles[i].updatePosition(mousePos, 1, 0.99, screenWidth, screenHeight);
         }
-        //----------------------------------------------------------------------------------
 
-        // Draw
-        //----------------------------------------------------------------------------------
         BeginDrawing();
 
-            ClearBackground(RAYWHITE);
+        ClearBackground(RAYWHITE);
 
-            for (int i = 0; i < particleCount; i++)
-            {
-                particles[i].drawPixel();
-            }
+        for (int i = 0; i < particleCount; i++)
+        {
+            particles[i].drawPixel();
+        }
 
-            DrawFPS(10, 10);
+        DrawFPS(10, 10);
 
         EndDrawing();
-        //----------------------------------------------------------------------------------
     }
 
-    // De-Initialization
-    //--------------------------------------------------------------------------------------
-    CloseWindow();        // Close window and OpenGL context
-    MemFree(particles);
-    //--------------------------------------------------------------------------------------
+    CloseWindow();
 
     return 0;
 }
