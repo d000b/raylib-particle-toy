@@ -32,7 +32,7 @@ int main()
     std::vector<Particle> particles;
     particles.reserve(particleCount);
 
-    std::generate_n(std::back_inserter(particles), particleCount, [=]() -> auto&& { return Particle{ screenWidth, screenHeight }; });
+    std::generate_n(std::back_inserter(particles), particleCount, [=]() -> auto { return Particle{ screenWidth, screenHeight }; });
 
     raylib::InitWindow(screenWidth, screenHeight, "raylib test");
 
@@ -42,11 +42,14 @@ int main()
 
     while (!raylib::WindowShouldClose())
     {
-        auto mousePos = raylib::Vector2{static_cast<float>(raylib::GetMouseX()), static_cast<float>(raylib::GetMouseY())};
+        const auto mousePos = raylib::Vector2{static_cast<float>(raylib::GetMouseX()), static_cast<float>(raylib::GetMouseY())};
 
-        for (long int i = 0; i < particleCount; i++)
+        const auto force = static_cast<float>(raylib::IsMouseButtonDown(raylib::MOUSE_BUTTON_LEFT))
+                         - static_cast<float>(raylib::IsMouseButtonDown(raylib::MOUSE_BUTTON_RIGHT));
+
+        for (long int i = 0; i < particleCount; ++i)
         {
-            particles[i].updatePosition(mousePos, 1, 0.99, screenWidth, screenHeight);
+            particles[i].updatePosition(mousePos, force, 0.99, screenWidth, screenHeight);
         }
 
         raylib::BeginDrawing();
