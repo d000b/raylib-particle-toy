@@ -62,11 +62,13 @@ raylib::Vector2 Particle::getNormal(raylib::Vector2 otherPos) {
 
 
 void Particle::attract(raylib::Vector2 posToAttract, float multiplier) {
-    float dist = fmax(getDist(posToAttract),0.5);
+    float scalar_dist = fmax(getDist(posToAttract),0.5);
     raylib::Vector2 normal = getNormal(posToAttract);
 
-    vel.x -= normal.x/dist;
-    vel.y -= normal.y/dist;
+    auto dist = raylib::Vector2{ scalar_dist, scalar_dist };
+
+    vel.x -= multiplier * normal.x / dist.x;
+    vel.y -= multiplier * normal.y / dist.y;
 }
 
 void Particle::doFriction(float amount) {
