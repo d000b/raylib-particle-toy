@@ -62,10 +62,11 @@ raylib::Vector2 Particle::getNormal(raylib::Vector2 otherPos) {
 
 
 void Particle::attract(raylib::Vector2 posToAttract, float multiplier) {
-    float scalar_dist = fmax(getDist(posToAttract),0.5);
+    const float scalar_dist = fmax(getDist(posToAttract), 0.5);
     raylib::Vector2 normal = getNormal(posToAttract);
 
-    auto dist = raylib::Vector2{ scalar_dist, scalar_dist };
+    // for a more dramatic move, raylib::Vector2{ 1.f, 1.f };
+    const auto dist = raylib::Vector2{ scalar_dist, scalar_dist };
 
     vel.x -= multiplier * normal.x / dist.x;
     vel.y -= multiplier * normal.y / dist.y;
