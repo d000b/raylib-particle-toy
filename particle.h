@@ -59,12 +59,12 @@ public:
 };
 
 Particle::Particle(int screenWidth, int screenHeight) {
-    pos.x = raylib::GetRandomValue(0, screenWidth-1);
-    pos.y = raylib::GetRandomValue(0, screenHeight-1);
+    pos.x = raylib::GetRandomValue(0, screenWidth - 1);
+    pos.y = raylib::GetRandomValue(0, screenHeight - 1);
     vel.x = raylib::GetRandomValue(-100, 100) / 100.f;
     vel.y = raylib::GetRandomValue(-100, 100) / 100.f;
     // raylib::Color = (raylib::Color){GetRandomValue(0,255),GetRandomValue(0,255),GetRandomValue(0,255),255};
-    color = raylib::Color{0,0,0,100};
+    color = raylib::Color{ 0, 0, 0, 100 };
 }
 
 Particle::Particle(raylib::Vector2 pos, raylib::Vector2 vel, raylib::Color color)
@@ -76,22 +76,27 @@ Particle::Particle(raylib::Vector2 pos, raylib::Vector2 vel, raylib::Color color
 float Particle::getDist(raylib::Vector2 otherPos) {
     const float dx = pos.x - otherPos.x;
     const float dy = pos.y - otherPos.y;
-    return sqrt((dx*dx) + (dy*dy));
+    return sqrt((dx * dx) + (dy * dy));
 }
 
 raylib::Vector2 Particle::getNormal(raylib::Vector2 otherPos) {
     float dist = getDist(otherPos);
-    if (dist == 0.0f) dist = 1;
+    
+    if (dist == 0.0f)
+    {
+        dist = 1;
+    }
+
     const float dx = pos.x - otherPos.x;
     const float dy = pos.y - otherPos.y;
-    raylib::Vector2 normal = raylib::Vector2{dx*(1/dist), dy*(1/dist)};
-    return normal;
+
+    return raylib::Vector2{ dx * (1 / dist), dy * (1 / dist) };
 }
 
 
 void Particle::attract(raylib::Vector2 posToAttract, float multiplier) {
     const float scalar_dist = std::fmax(getDist(posToAttract), 1.f);
-    raylib::Vector2 normal = getNormal(posToAttract);
+    const raylib::Vector2 normal = getNormal(posToAttract);
 
     // for a more dramatic move, raylib::Vector2{ 1.f, 1.f };
     const auto dist = raylib::Vector2{ scalar_dist, scalar_dist };
@@ -117,7 +122,6 @@ void Particle::updatePosition(const raylib::Vector2 posToAttract, const float at
     doFriction(friction);
     move(width, height);
 }
-
 
 void Particle::drawPixel() {
     DrawPixelV(pos, color);
