@@ -47,18 +47,18 @@ int main()
         const auto force = static_cast<float>(raylib::IsMouseButtonDown(raylib::MOUSE_BUTTON_LEFT))
                          - static_cast<float>(raylib::IsMouseButtonDown(raylib::MOUSE_BUTTON_RIGHT));
 
-        for (long int i = 0; i < particleCount; ++i)
+        for (auto& particle : particles)
         {
-            particles[i].updatePosition(mousePos, force, 0.99, screenWidth, screenHeight);
+            particle.updatePosition(mousePos, force, 0.99, screenWidth, screenHeight);
         }
 
         raylib::BeginDrawing();
 
         raylib::ClearBackground(white_background);
 
-        for (int i = 0; i < particleCount; i++)
+        for (auto& particle : particles)
         {
-            particles[i].drawPixel();
+            particle.drawPixel();
         }
 
         raylib::DrawFPS(10, 10);
