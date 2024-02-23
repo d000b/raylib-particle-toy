@@ -15,7 +15,35 @@ private:
     raylib::Vector2 pos;
     raylib::Vector2 vel;
     raylib::Color color;
+private:
+    void borderline_swap(const int screenWidth, const int screenHeight)
+    {
+        constexpr auto border = 10.f;
+        constexpr auto mirror_force = 0.985f;
 
+        if (pos.x < border)
+        {
+            pos.x = screenWidth - border;
+            vel.x *= mirror_force;
+        }
+        else if (pos.x >= screenWidth - border)
+        {
+            pos.x = border;
+            vel.x *= mirror_force;
+        }
+
+        if (pos.y < border)
+        {
+            pos.y = screenHeight - border;
+            vel.y *= mirror_force;
+        }
+        else if (pos.y >= screenHeight - border)
+        {
+            pos.y = border;
+            vel.y *= mirror_force;
+        }
+    }
+private:
     float getDist(raylib::Vector2 pos);
     raylib::Vector2 getNormal(raylib::Vector2 otherPos);
 public:
@@ -39,8 +67,8 @@ Particle::Particle(int screenWidth, int screenHeight) {
     color = raylib::Color{0,0,0,100};
 }
 
-Particle::Particle(raylib::Vector2 _pos, raylib::Vector2 _vel, raylib::Color color)
-    : pos(_pos), vel(_vel), color(color)
+Particle::Particle(raylib::Vector2 pos, raylib::Vector2 vel, raylib::Color color)
+    : pos(pos), vel(vel), color(color)
 {
 
 }
@@ -62,7 +90,7 @@ raylib::Vector2 Particle::getNormal(raylib::Vector2 otherPos) {
 
 
 void Particle::attract(raylib::Vector2 posToAttract, float multiplier) {
-    const float scalar_dist = fmax(getDist(posToAttract), 0.5);
+    const float scalar_dist = std::fmax(getDist(posToAttract), 1.f);
     raylib::Vector2 normal = getNormal(posToAttract);
 
     // for a more dramatic move, raylib::Vector2{ 1.f, 1.f };
@@ -81,15 +109,7 @@ void Particle::move(int screenWidth, int screenHeight) {
     pos.x += vel.x;
     pos.y += vel.y;
 
-    if (pos.x < 0)
-        pos.x += screenWidth;
-    else if (pos.x >= screenWidth)
-        pos.x -= screenWidth;
-
-    if (pos.y < 0)
-        pos.y += screenHeight;
-    else if (pos.y >= screenHeight)
-        pos.y -= screenHeight;
+    borderline_swap(screenWidth, screenHeight);
 }
 
 void Particle::updatePosition(const raylib::Vector2 posToAttract, const float attraction, const float friction, const long width, const long height) {
