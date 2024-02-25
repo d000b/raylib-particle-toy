@@ -62,9 +62,8 @@ Particle::Particle(int screenWidth, int screenHeight) {
     pos.x = raylib::GetRandomValue(0, screenWidth - 1);
     pos.y = raylib::GetRandomValue(0, screenHeight - 1);
     vel.x = raylib::GetRandomValue(-100, 100) / 100.f;
-    vel.y = raylib::GetRandomValue(-100, 100) / 100.f;
-    // raylib::Color = (raylib::Color){GetRandomValue(0,255),GetRandomValue(0,255),GetRandomValue(0,255),255};
-    color = raylib::Color{ 0, 0, 0, 100 };
+    vel.y = raylib::GetRandomValue(-100, 100) / 100.f;   
+    color = raylib::Color{ 0, 0, 0, 255 };
 }
 
 Particle::Particle(raylib::Vector2 pos, raylib::Vector2 vel, raylib::Color color)
