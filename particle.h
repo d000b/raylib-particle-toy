@@ -16,33 +16,7 @@ private:
     raylib::Vector2 vel;
     raylib::Color color;
 private:
-    void borderline_swap(const int screenWidth, const int screenHeight)
-    {
-        constexpr auto border = 10.f;
-        constexpr auto mirror_force = 0.985f;
-
-        if (pos.x < border)
-        {
-            pos.x = screenWidth - border;
-            vel.x *= mirror_force;
-        }
-        else if (pos.x >= screenWidth - border)
-        {
-            pos.x = border;
-            vel.x *= mirror_force;
-        }
-
-        if (pos.y < border)
-        {
-            pos.y = screenHeight - border;
-            vel.y *= mirror_force;
-        }
-        else if (pos.y >= screenHeight - border)
-        {
-            pos.y = border;
-            vel.y *= mirror_force;
-        }
-    }
+    void borderline_swap(const int screenWidth, const int screenHeight);
 private:
     float getDist(raylib::Vector2 pos);
     raylib::Vector2 getNormal(raylib::Vector2 otherPos);
@@ -124,4 +98,33 @@ void Particle::updatePosition(const raylib::Vector2 posToAttract, const float at
 
 void Particle::drawPixel() {
     DrawPixelV(pos, color);
+}
+
+
+void Particle::borderline_swap(const int screenWidth, const int screenHeight)
+{
+    constexpr auto border = 10.f;
+    constexpr auto mirror_force = 0.985f;
+
+    if (pos.x < border)
+    {
+        pos.x = screenWidth - border;
+        vel.x *= mirror_force;
+    }
+    else if (pos.x >= screenWidth - border)
+    {
+        pos.x = border;
+        vel.x *= mirror_force;
+    }
+
+    if (pos.y < border)
+    {
+        pos.y = screenHeight - border;
+        vel.y *= mirror_force;
+    }
+    else if (pos.y >= screenHeight - border)
+    {
+        pos.y = border;
+        vel.y *= mirror_force;
+    }
 }
