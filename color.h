@@ -35,3 +35,11 @@ raylib::Color HSVtoRGB(raylib::Vector3 hsv)
         static_cast<decltype(raylib::Color::a)>(255.0)
     };
 }
+
+float color_value_curve(float v)
+{
+#undef min
+    const auto speed = 0.0125f;
+
+    return std::clamp((v - speed), 0.f, 1.f);
+}

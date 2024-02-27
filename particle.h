@@ -24,6 +24,7 @@ private:
 
     void change_color_by_velocity();
 private:
+    float distance(float x, float y) const;
     float getDist(raylib::Vector2 pos);
     raylib::Vector2 getNormal(raylib::Vector2 otherPos);
 public:
@@ -52,10 +53,16 @@ Particle::Particle(raylib::Vector2 pos, raylib::Vector2 vel, raylib::Color color
 
 }
 
+float Particle::distance(float x, float y) const
+{
+    return std::sqrtf(x * x + y * y);
+}
+
 float Particle::getDist(raylib::Vector2 otherPos) {
     const float dx = pos.x - otherPos.x;
     const float dy = pos.y - otherPos.y;
-    return std::sqrtf((dx * dx) + (dy * dy));
+    
+    return distance(dx, dy);
 }
 
 raylib::Vector2 Particle::getNormal(raylib::Vector2 otherPos) {
@@ -134,10 +141,12 @@ void Particle::borderline_swap(const int screenWidth, const int screenHeight)
 
 void Particle::change_color_by_velocity()
 {
-    const auto inverse = 1 / std::fmax(getDist(vel), 1.f);
+    const auto speed = distance(vel.x, vel.y);
+
+    const auto inverse = 1 / std::fmax(speed, 1.f);
     const auto velocity = raylib::Vector2{ vel.x * inverse, vel.y * inverse };
 
     const float angle = std::atan2(velocity.x, velocity.y) * (RAD2DEG);
 
-    color = ::HSVtoRGB(raylib::Vector3{ angle, 1.0, 1.0 });
+    color = ::HSVtoRGB(raylib::Vector3{ angle, 1.0, ::color_value_curve(speed) });
 }
