@@ -1,12 +1,16 @@
+#pragma once
 
 #include <cstdlib>
 #include <cmath>
+#include <algorithm>
 
 namespace raylib {
     #include "raylib\raylib.h"
 }
 
-#pragma once
+namespace {
+    #include "color.h"
+}
 
 
 class Particle
@@ -17,6 +21,8 @@ private:
     raylib::Color color;
 private:
     void borderline_swap(const int screenWidth, const int screenHeight);
+
+    void change_color_by_velocity();
 private:
     float getDist(raylib::Vector2 pos);
     raylib::Vector2 getNormal(raylib::Vector2 otherPos);
@@ -49,21 +55,16 @@ Particle::Particle(raylib::Vector2 pos, raylib::Vector2 vel, raylib::Color color
 float Particle::getDist(raylib::Vector2 otherPos) {
     const float dx = pos.x - otherPos.x;
     const float dy = pos.y - otherPos.y;
-    return sqrt((dx * dx) + (dy * dy));
+    return std::sqrtf((dx * dx) + (dy * dy));
 }
 
 raylib::Vector2 Particle::getNormal(raylib::Vector2 otherPos) {
-    float dist = getDist(otherPos);
+    const float inverse_distance = 1.f / std::fmax(getDist(otherPos), 1.f);
     
-    if (dist == 0.0f)
-    {
-        dist = 1;
-    }
-
     const float dx = pos.x - otherPos.x;
     const float dy = pos.y - otherPos.y;
 
-    return raylib::Vector2{ dx * (1 / dist), dy * (1 / dist) };
+    return raylib::Vector2{ dx * inverse_distance, dy * inverse_distance };
 }
 
 
@@ -81,6 +82,8 @@ void Particle::attract(raylib::Vector2 posToAttract, float multiplier) {
 void Particle::doFriction(float amount) {
     vel.x *= amount;
     vel.y *= amount;
+
+    change_color_by_velocity();
 }
 
 void Particle::move(int screenWidth, int screenHeight) {
@@ -127,4 +130,14 @@ void Particle::borderline_swap(const int screenWidth, const int screenHeight)
         pos.y = border;
         vel.y *= mirror_force;
     }
+}
+
+void Particle::change_color_by_velocity()
+{
+    const auto inverse = 1 / std::fmax(getDist(vel), 1.f);
+    const auto velocity = raylib::Vector2{ vel.x * inverse, vel.y * inverse };
+
+    const float angle = std::atan2(velocity.x, velocity.y) * (RAD2DEG);
+
+    color = ::HSVtoRGB(raylib::Vector3{ angle, 1.0, 1.0 });
 }
