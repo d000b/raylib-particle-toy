@@ -120,6 +120,8 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="color.h" />
+    <ClInclude Include="defines.h" />
     <ClInclude Include="particle.h" />
     <ClInclude Include="raylib\raylib.h" />
     <ClInclude Include="raylib\raymath.h" />
